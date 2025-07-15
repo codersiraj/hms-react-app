@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/6c0a9b9e-d32c-46c1-9eae-04802e558f7a/resourceGroups/appsvc_linux_southeastasia/providers/Microsoft.Web/sites/Hospital-Management-App",
+    "appService.deploySubpath": "build"
+}

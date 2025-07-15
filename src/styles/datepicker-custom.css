@@ -1,0 +1,85 @@
+.custom-calendar {
+  width: 100% !important;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+}
+
+.react-datepicker-wrapper {
+  display: block;
+  width: 100% !important;
+}
+
+/* Calendar Header */
+.react-datepicker__header {
+  background-color: #00ACC1; /* darker cyan */
+  border-bottom: none;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+/* --- Dropdown container styling --- */
+.react-datepicker__year-dropdown,
+.react-datepicker__month-dropdown {
+  background-color: #e0f7fa !important;     /* cyan-100 */
+  border: 1px solid #00acc1 !important;     /* cyan-600 */
+  border-radius: 0.375rem !important;
+  color: #006064 !important;                /* cyan-900 */
+  font-weight: 500;
+  padding: 4px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999 !important;
+}
+
+/* --- Dropdown options --- */
+.react-datepicker__year-option,
+.react-datepicker__month-option {
+  padding: 0.5rem 1rem;
+  background-color: #e0f7fa;
+  color: #006064;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.react-datepicker__year-option:hover,
+.react-datepicker__month-option:hover {
+  background-color: #00bcd4;  /* cyan-500 */
+  color: white;
+  cursor: pointer;
+}
+
+.react-datepicker__year-option--selected,
+.react-datepicker__month-option--selected {
+  background-color: #00838f; /* cyan-700 */
+  color: white;
+  font-weight: 600;
+}
+
+/* --- Scrollbar customization --- */
+.react-datepicker__year-dropdown,
+.react-datepicker__month-dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: #06b6d4 #e0f7fa;
+}
+
+.react-datepicker__year-dropdown::-webkit-scrollbar,
+.react-datepicker__month-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.react-datepicker__year-dropdown::-webkit-scrollbar-track,
+.react-datepicker__month-dropdown::-webkit-scrollbar-track {
+  background: #e0f7fa;
+  border-radius: 10px;
+}
+
+.react-datepicker__year-dropdown::-webkit-scrollbar-thumb,
+.react-datepicker__month-dropdown::-webkit-scrollbar-thumb {
+  background-color: #06b6d4;
+  border-radius: 10px;
+  border: 2px solid #e0f7fa;
+}
+
+.react-datepicker__year-dropdown::-webkit-scrollbar-thumb:hover,
+.react-datepicker__month-dropdown::-webkit-scrollbar-thumb:hover {
+  background-color: #0891b2;
+}
