@@ -7,12 +7,13 @@ import PatientRegister from './pages/PatientRegister';
 import './index.css';
 import AdminConsole from './pages/AdminConsole';
 import NewAppointment from './pages/NewAppointment';
+import MainPage from './pages/MainPage';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<MainPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/patient-register" element={<PatientRegister />} />
         <Route path="/adminconsole" element={<AdminConsole />} />
