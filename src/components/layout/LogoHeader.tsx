@@ -3,8 +3,8 @@ import HMSLogo from "../../assets/img/HMS.png";
 
 const LogoHeader = () => {
   return (
-    <div className="w-full h-[80px] bg-[#bfe8ee] shadow-sm flex items-center px-4">
-      <div className="max-w-[180px] h-[180px] flex items-center">
+    <div className="w-full h-[70px] bg-[white] shadow-sm flex items-center px-4">
+      <div className="max-w-[150px] h-[150px] flex items-center">
         <img
           src={HMSLogo}
           alt="HMS Logo"

@@ -72,7 +72,7 @@ export default function Sidebar({
 
       <aside
         className={cn(
-          "fixed top-[140px] bottom-0 z-40 bg-[#003366] text-white transition-all duration-300 overflow-y-auto",
+          "fixed top-[130px] bottom-0 z-40 bg-[#003366] text-white transition-all duration-300 overflow-y-auto",
           collapsed ? "w-16" : "w-64",
           mobileOpen ? "left-0" : "-left-full",
           "md:left-0"
