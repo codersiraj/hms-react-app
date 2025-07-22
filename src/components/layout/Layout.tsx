@@ -3,6 +3,7 @@ import Sidebar from "../layout/Sidebar";
 import Header from "../layout/Header";
 import LogoHeader from "./LogoHeader";
 import { cn } from "../../utils/cn";
+import PatientDetailsDashboard from "../../pages/PatientDetailsDashboard";
 
 export default function Layout({
   children,
@@ -12,6 +13,10 @@ export default function Layout({
   const [activeTab, setActiveTab] = useState<"patient" | "doctor">("patient");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{
+    text: string;
+    color: "green" | "red";
+  } | null>(null);
 
   const toggleSidebar = () => {
     if (window.innerWidth < 768) {
@@ -43,15 +48,16 @@ export default function Layout({
         <LogoHeader />
         <Header
           onMenuClick={toggleSidebar}
-          onSettingsClick={handleSettingsClick}
+          setStatusMessage={setStatusMessage}
         />
       </div>
 
-      {/* 🔹 Fixed Sidebar */}
+      {/* 🔹 Fixed Sidebar - always shown in desktop view */}
       <div
         className={cn(
           "fixed top-[124px] left-0 bottom-0 z-40 transition-all duration-300",
-          collapsed ? "w-16" : "w-64"
+          collapsed ? "w-16" : "w-64",
+          "hidden md:block" // always show on desktop, hide on mobile
         )}
       >
         <Sidebar
@@ -67,16 +73,21 @@ export default function Layout({
       <main
         className="transition-all duration-300 overflow-y-auto"
         style={{
-          marginLeft: window.innerWidth >= 768 ? `${sidebarWidth}px` : "0px",
+          marginLeft: window.innerWidth >= 768 && !statusMessage ? `${sidebarWidth}px` : "0px",
           marginTop: `${totalFixedHeader}px`,
           padding: "16px",
           height: `calc(100vh - ${totalFixedHeader}px)`,
           boxSizing: "border-box",
         }}
       >
-        <div className="min-h-full">{children(activeTab)}</div>
+        <div className="min-h-full">
+          {statusMessage ? (
+            <PatientDetailsDashboard statusMessage={statusMessage} />
+          ) : (
+            children(activeTab)
+          )}
+        </div>
       </main>
-
     </div>
   );
 }
