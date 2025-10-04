@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Bell, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type HeaderProps = {
   onMenuClick: () => void;
@@ -9,14 +10,18 @@ type HeaderProps = {
 const API_BASE_URL =
   (window as any)._env_?.API_BASE_URL
     ? `${(window as any)._env_.API_BASE_URL}/api/patient`
-    : 'http://localhost:5000/api/patient';
+    : "http://localhost:5000/api/patient";
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick, setStatusMessage }) => {
   const [nric, setNRIC] = useState("");
+  const navigate = useNavigate();
 
   const handleCheck = async () => {
     if (nric.trim() === "") {
-      setStatusMessage({ text: "Please enter a valid NRIC/Passport number.", color: "red" });
+      setStatusMessage({
+        text: "Please enter a valid NRIC/Passport number.",
+        color: "red",
+      });
       return;
     }
 
@@ -35,8 +40,18 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, setStatusMessage }) => {
       }
     } catch (error) {
       console.error("Check failed:", error);
-      setStatusMessage({ text: "Error checking NRIC/Passport number.", color: "red" });
+      setStatusMessage({
+        text: "Error checking NRIC/Passport number.",
+        color: "red",
+      });
     }
+  };
+
+  // ✅ Logout Handler
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // remove the stored token
+    localStorage.removeItem("user");  // if you store user info, clear it too
+    navigate("/login"); // redirect to login
   };
 
   return (
@@ -102,8 +117,15 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, setStatusMessage }) => {
       {/* Right: Icons + Profile */}
       <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 pl-2 sm:pl-4">
         <div className="flex items-center gap-2 sm:gap-3">
-          <Bell className="h-5 w-5 text-white" />
-          <LogOut className="h-5 w-5 text-white" />
+          {/* <Bell className="h-5 w-5 text-white" /> */}
+          {/* ✅ Logout Button */}
+          <button
+            onClick={handleLogout}
+            title="Sign out"
+            className="hover:text-red-300 transition"
+          >
+            <LogOut className="h-5 w-5 text-white" />
+          </button>
         </div>
 
         <div className="relative">
