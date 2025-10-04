@@ -10,10 +10,10 @@ export interface LoginResponse {
   [key: string]: any;
 }
 
-const apiBaseUrl = (window as any)._env_?.API_BASE_URL || 'http://localhost:5000';
+const apiBaseUrl = (window as any)._env_?.API_BASE_URL || 'https://localhost:7181';
 
 export async function loginUser(credentials: LoginRequest): Promise<LoginResponse> {
-  const response = await fetch(`${apiBaseUrl}/api/Auth/login`, {
+  const response = await fetch(`${apiBaseUrl}/api/Auth/authenticate`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

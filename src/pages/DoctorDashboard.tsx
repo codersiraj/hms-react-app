@@ -86,17 +86,29 @@ export default function DoctorDashboard() {
         <div className="text-center md:text-left">
           <h3 className="text-xl font-bold text-[#1d4e89]">{doctor.name}</h3>
           <p className="text-gray-600">{doctor.specialty}</p>
-          <p className="text-sm text-[#003366] mt-1">{doctor.department} Department</p>
+          <p className="text-sm text-[#003366] mt-1">
+            {doctor.department} Department
+          </p>
           <div className="mt-4 text-sm text-gray-700 space-y-1">
-            <p><span className="font-medium text-[#1d4e89]">Experience:</span> {doctor.experience}</p>
-            <p><span className="font-medium text-[#1d4e89]">Consultation Hours:</span> {doctor.timings}</p>
+            <p>
+              <span className="font-medium text-[#1d4e89]">Experience:</span>{" "}
+              {doctor.experience}
+            </p>
+            <p>
+              <span className="font-medium text-[#1d4e89]">
+                Consultation Hours:
+              </span>{" "}
+              {doctor.timings}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Today's Appointments Widget */}
+      {/* Today's Appointments */}
       <div className="bg-white rounded-2xl shadow p-6 mb-6 overflow-x-auto">
-        <h3 className="text-lg font-semibold text-[#00575d] mb-4">Today's Appointments</h3>
+        <h3 className="text-lg font-semibold text-[#00575d] mb-4">
+          Today's Appointments
+        </h3>
         <table className="w-full text-sm text-left min-w-[600px]">
           <thead className="text-[#003366] border-b">
             <tr>
@@ -116,12 +128,13 @@ export default function DoctorDashboard() {
                 <td className="py-2">{apt.reason}</td>
                 <td className="py-2">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${apt.status === "Scheduled"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : apt.status === "In Progress"
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      apt.status === "Scheduled"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : apt.status === "In Progress"
                         ? "bg-blue-100 text-blue-700"
                         : "bg-green-100 text-green-700"
-                      }`}
+                    }`}
                   >
                     {apt.status}
                   </span>
@@ -132,9 +145,11 @@ export default function DoctorDashboard() {
         </table>
       </div>
 
-      {/* Patient Queue Widget */}
+      {/* Patient Queue */}
       <div className="bg-white rounded-2xl shadow p-6 mb-6 overflow-x-auto border border-[#73d2de]">
-        <h3 className="text-lg font-semibold text-[#00575d] mb-4">Patient Queue</h3>
+        <h3 className="text-lg font-semibold text-[#00575d] mb-4">
+          Patient Queue
+        </h3>
         <table className="w-full text-sm text-left min-w-[500px]">
           <thead className="text-[#003366] border-b">
             <tr>
@@ -151,12 +166,13 @@ export default function DoctorDashboard() {
                 <td className="py-2">{patient.name}</td>
                 <td className="py-2">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${patient.status === "Waiting"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : patient.status === "In Consultation"
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      patient.status === "Waiting"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : patient.status === "In Consultation"
                         ? "bg-blue-100 text-blue-700"
                         : "bg-green-100 text-green-700"
-                      }`}
+                    }`}
                   >
                     {patient.status}
                   </span>
@@ -176,24 +192,40 @@ export default function DoctorDashboard() {
       </div>
 
       {/* Prescription Modal */}
-      <Dialog open={modalOpen} onClose={() => setModalOpen(false)} className="fixed inset-0 z-50 overflow-y-auto">
+      <Dialog
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        className="fixed inset-0 z-50 overflow-y-auto"
+      >
         <div className="flex items-center justify-center min-h-screen bg-black/50 p-4">
           <Dialog.Panel className="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
               <Dialog.Title className="text-lg font-bold text-gray-800">
                 Prescriptions – Patient #{selectedPatient}
               </Dialog.Title>
-              <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <button
+                onClick={() => setModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="space-y-3">
               {prescriptions.map((p, i) => (
-                <div key={i} className="bg-gray-50 p-3 rounded border border-gray-200">
-                  <p className="text-sm text-gray-800"><strong>Medicine:</strong> {p.medicine}</p>
-                  <p className="text-sm text-gray-600"><strong>Dosage:</strong> {p.dosage}</p>
-                  <p className="text-sm text-gray-600"><strong>Instructions:</strong> {p.instructions}</p>
-                </div>
+                <div
+                  key={i}
+                  className="bg-gray-50 p-3 rounded border border-gray-200"
+                >
+                  <p className="text-sm text-gray-800">
+                    <strong>Medicine:</strong> {p.medicine}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Dosage:</strong> {p.dosage}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Instructions:</strong> {p.instructions}
+                  </p>
+                </div>  
               ))}
             </div>
           </Dialog.Panel>

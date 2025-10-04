@@ -1,16 +1,12 @@
+// src/components/layout/Layout.tsx
 import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
 import Sidebar from "../layout/Sidebar";
 import Header from "../layout/Header";
 import LogoHeader from "./LogoHeader";
-import { cn } from "../../utils/cn";
 import PatientDetailsDashboard from "../../pages/PatientDetailsDashboard";
 
-export default function Layout({
-  children,
-}: {
-  children: (activeTab: "patient" | "doctor") => React.ReactNode;
-}) {
-  const [activeTab, setActiveTab] = useState<"patient" | "doctor">("patient");
+export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{
@@ -39,22 +35,20 @@ export default function Layout({
 
   return (
     <div className="h-screen w-screen bg-[#ebf0f4] overflow-hidden">
-      {/* 🔹 Fixed Top Headers */}
+      {/* Top Headers */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <LogoHeader />
         <Header onMenuClick={toggleSidebar} setStatusMessage={setStatusMessage} />
       </div>
 
-      {/* 🔹 Sidebar - always mounted, but mobile behavior handled inside */}
+      {/* Sidebar */}
       <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
         collapsed={collapsed}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
       />
 
-      {/* 🔹 Main Content Scroll Area */}
+      {/* Main Content */}
       <main
         className="transition-all duration-300 overflow-y-auto"
         style={{
@@ -69,7 +63,7 @@ export default function Layout({
           {statusMessage ? (
             <PatientDetailsDashboard statusMessage={statusMessage} />
           ) : (
-            children(activeTab)
+            <Outlet />
           )}
         </div>
       </main>

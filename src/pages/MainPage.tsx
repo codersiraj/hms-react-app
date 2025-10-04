@@ -1,16 +1,9 @@
-import Layout from '../components/layout/Layout';
-import PatientDashboard from './PatientDashboard';
-import DoctorDashboard from './DoctorDashboard';
+// src/pages/MainPage.tsx
+import PatientDashboard from "./PatientDashboard";
+import DoctorDashboard from "./DoctorDashboard";
 
 export default function MainPage() {
-  return (
-    <Layout>
-      {(activeTab) => (
-        <>
-          {activeTab === 'patient' && <PatientDashboard />}
-          {activeTab === 'doctor' && <DoctorDashboard />}
-        </>
-      )}
-    </Layout>
-  );
+  // For now just show PatientDashboard by default
+  // Later you can make this conditional via Redux, Context, or URL (/doctor etc.)
+  return <PatientDashboard />; 
 }

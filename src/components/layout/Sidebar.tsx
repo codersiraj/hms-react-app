@@ -1,30 +1,34 @@
 import {
   Home,
-  User,
-  LayoutGrid,
+  CalendarCheck,
+  Users,
+  BarChart2,
+  FileBadge,
+  MessageSquare,
+  FilePlus2,
   ChevronRight,
   ChevronDown,
 } from "lucide-react";
 import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "../../utils/cn";
 
 type SidebarProps = {
-  activeTab: "patient" | "doctor";
-  setActiveTab: (tab: "patient" | "doctor") => void;
   collapsed: boolean;
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
 };
 
 export default function Sidebar({
-  activeTab,
-  setActiveTab,
   collapsed,
   mobileOpen,
   setMobileOpen,
 }: SidebarProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const menus = [
     {
@@ -33,28 +37,45 @@ export default function Sidebar({
       children: [
         {
           label: "Patient Dashboard",
-          key: "patient",
-          onClick: () => setActiveTab("patient"),
+          key: "patient-dashboard",
+          onClick: () => navigate("/patient-dashboard"),
         },
         {
           label: "Doctor Dashboard",
-          key: "doctor",
-          onClick: () => setActiveTab("doctor"),
+          key: "doctor-dashboard",
+          onClick: () => navigate("/doctor-dashboard"),
         },
       ],
     },
     {
-      label: "Menu 2",
-      icon: <LayoutGrid size={20} />,
-      onClick: () => alert("Menu 2 clicked"),
+      label: "Appointments",
+      icon: <CalendarCheck size={20} />,
+      onClick: () => navigate("/appointments"),
     },
     {
-      label: "Menu 3",
-      icon: <User size={20} />,
-      children: [
-        { label: "Option 1", onClick: () => alert("Option 1 clicked") },
-        { label: "Option 2", onClick: () => alert("Option 2 clicked") },
-      ],
+      label: "Queue",
+      icon: <Users size={20} />,
+      onClick: () => navigate("/queue"),
+    },
+    {
+      label: "Reports",
+      icon: <BarChart2 size={20} />,
+      onClick: () => navigate("/reports"),
+    },
+    {
+      label: "Certificates",
+      icon: <FileBadge size={20} />,
+      onClick: () => navigate("/certificates"),
+    },
+    {
+      label: "Chat",
+      icon: <MessageSquare size={20} />,
+      onClick: () => navigate("/chat"),
+    },
+    {
+      label: "Post",
+      icon: <FilePlus2 size={20} />,
+      onClick: () => navigate("/post"),
     },
   ];
 
@@ -78,8 +99,6 @@ export default function Sidebar({
           "md:left-0"
         )}
       >
-
-
         <nav className="flex flex-col pt-4 space-y-2 relative">
           {menus.map((menu, idx) => {
             const hasChildren = !!menu.children;
@@ -104,7 +123,7 @@ export default function Sidebar({
                   }}
                   className={cn(
                     "flex items-center w-full px-4 py-2 hover:bg-[#00575d] transition-colors",
-                    activeTab === menu.label ? "bg-[#00575d]" : ""
+                    location.pathname.includes(menu.label.toLowerCase()) ? "bg-[#00575d]" : ""
                   )}
                 >
                   <span>{menu.icon}</span>
@@ -129,7 +148,10 @@ export default function Sidebar({
                       <button
                         key={idx}
                         onClick={child.onClick}
-                        className="block w-full text-left px-2 py-1.5 hover:bg-[#00575d] rounded"
+                        className={cn(
+                          "block w-full text-left px-2 py-1.5 hover:bg-[#00575d] rounded",
+                          location.pathname.includes(child.key) ? "bg-[#00575d]" : ""
+                        )}
                       >
                         {child.label}
                       </button>
@@ -144,7 +166,10 @@ export default function Sidebar({
                       <button
                         key={idx}
                         onClick={child.onClick}
-                        className="block w-full text-left px-4 py-2 hover:bg-[#00575d]"
+                        className={cn(
+                          "block w-full text-left px-4 py-2 hover:bg-[#00575d]",
+                          location.pathname.includes(child.key) ? "bg-[#00575d]" : ""
+                        )}
                       >
                         {child.label}
                       </button>
