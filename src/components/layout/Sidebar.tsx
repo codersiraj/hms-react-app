@@ -48,35 +48,46 @@ export default function Sidebar({
       ],
     },
     {
+      label: "Member",
+      icon: <Home size={20} />,
+      children: [
+        {
+          label: "Member List",
+          key: "member-list",
+          onClick: () => navigate("/member-list"),
+        },
+      ],
+    },
+    {
       label: "Appointments",
       icon: <CalendarCheck size={20} />,
       onClick: () => navigate("/appointments"),
     },
-    {
-      label: "Queue",
-      icon: <Users size={20} />,
-      onClick: () => navigate("/queue"),
-    },
-    {
-      label: "Reports",
-      icon: <BarChart2 size={20} />,
-      onClick: () => navigate("/reports"),
-    },
-    {
-      label: "Certificates",
-      icon: <FileBadge size={20} />,
-      onClick: () => navigate("/certificates"),
-    },
-    {
-      label: "Chat",
-      icon: <MessageSquare size={20} />,
-      onClick: () => navigate("/chat"),
-    },
-    {
-      label: "Post",
-      icon: <FilePlus2 size={20} />,
-      onClick: () => navigate("/post"),
-    },
+    // {
+    //   label: "Queue",
+    //   icon: <Users size={20} />,
+    //   onClick: () => navigate("/queue"),
+    // },
+    // {
+    //   label: "Reports",
+    //   icon: <BarChart2 size={20} />,
+    //   onClick: () => navigate("/reports"),
+    // },
+    // {
+    //   label: "Certificates",
+    //   icon: <FileBadge size={20} />,
+    //   onClick: () => navigate("/certificates"),
+    // },
+    // {
+    //   label: "Chat",
+    //   icon: <MessageSquare size={20} />,
+    //   onClick: () => navigate("/chat"),
+    // },
+    // {
+    //   label: "Post",
+    //   icon: <FilePlus2 size={20} />,
+    //   onClick: () => navigate("/post"),
+    // },
   ];
 
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
