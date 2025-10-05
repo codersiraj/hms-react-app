@@ -6,7 +6,7 @@ interface EditMemberFormProps {
   onUpdated: () => void;
 }
 
-const apiBaseUrl = (window as any)._env_?.API_BASE_URL || 'https://localhost:7181';
+const apiBaseUrl = (window as any)._env_?.API_BASE_URL || "https://localhost:7181";
 
 export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMemberFormProps) {
   const [formData, setFormData] = useState<any>(null);
@@ -17,11 +17,52 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
     const fetchMember = async () => {
       const res = await fetch(`${apiBaseUrl}/api/member/${memberId}`);
       const data = await res.json();
+
+      // Normalize fields for NRIC
+      if (data.idType === "NRIC") {
+        data.nationality = "Malaysian";
+        data.country = "Malaysia";
+      }
+
       setFormData(data);
     };
     fetchMember();
   }, [memberId]);
 
+  // ✅ NRIC → DOB auto-fill logic (updated to clear when invalid)
+  const handleNricChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData((prev: any) => ({ ...prev, nric: value }));
+
+    if (value.length >= 6) {
+      const yy = parseInt(value.substring(0, 2), 10);
+      const mm = parseInt(value.substring(2, 4), 10);
+      const dd = parseInt(value.substring(4, 6), 10);
+
+      if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31) {
+        const fullYear = yy >= 25 ? 1900 + yy : 2000 + yy;
+        const dobValue = `${fullYear}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
+        setFormData((prev: any) => ({ ...prev, dob: dobValue }));
+        return;
+      }
+    }
+
+    // ❌ Clear DOB if NRIC becomes invalid/incomplete
+    setFormData((prev: any) => ({ ...prev, dob: "" }));
+  };
+
+  // ✅ ID Type change logic (auto set Nationality/Country)
+  const handleIdTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setFormData((prev: any) => ({
+      ...prev,
+      idType: value,
+      nationality: value === "NRIC" ? "Malaysian" : "",
+      country: value === "NRIC" ? "Malaysia" : "",
+    }));
+  };
+
+  // ✅ Generic field handler
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -45,7 +86,7 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
 
       if (res.ok) {
         onUpdated(); // refresh member list
-        onClose();   // close form
+        onClose(); // close form
       }
     } finally {
       setLoading(false);
@@ -59,7 +100,7 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
       <h2 className="text-xl font-bold mb-4">Edit Member</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Row 1 */}
+        {/* Row 1: Member Type / ID Type */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm">Member Type</label>
@@ -78,7 +119,7 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
             <select
               name="idType"
               value={formData.idType || ""}
-              onChange={handleChange}
+              onChange={handleIdTypeChange}
               className="w-full border px-3 py-2 rounded"
             >
               <option>NRIC</option>
@@ -87,7 +128,7 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
           </div>
         </div>
 
-        {/* Row 2 */}
+        {/* Row 2: NRIC / Full Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm">NRIC</label>
@@ -95,8 +136,9 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
               type="text"
               name="nric"
               value={formData.nric || ""}
-              onChange={handleChange}
+              onChange={handleNricChange}
               className="w-full border px-3 py-2 rounded"
+              placeholder="e.g. 991231145678"
             />
           </div>
           <div>
@@ -111,7 +153,7 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
           </div>
         </div>
 
-        {/* Row 3 */}
+        {/* Row 3: DOB / Gender */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm">DOB</label>
@@ -120,7 +162,10 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
               name="dob"
               value={formData.dob ? formData.dob.split("T")[0] : ""}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              readOnly={formData.idType === "NRIC"}
+              className={`w-full border px-3 py-2 rounded ${
+                formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
             />
           </div>
           <div>
@@ -137,7 +182,7 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
           </div>
         </div>
 
-        {/* Row 4 */}
+        {/* Row 4: Nationality / Postal Code */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm">Nationality</label>
@@ -146,7 +191,10 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
               name="nationality"
               value={formData.nationality || ""}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              readOnly={formData.idType === "NRIC"}
+              className={`w-full border px-3 py-2 rounded ${
+                formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
             />
           </div>
           <div>
@@ -183,7 +231,7 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
           />
         </div>
 
-        {/* Row 6 */}
+        {/* Row 6: City / State / Country */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm">City</label>
@@ -212,12 +260,15 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
               name="country"
               value={formData.country || ""}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              readOnly={formData.idType === "NRIC"}
+              className={`w-full border px-3 py-2 rounded ${
+                formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
             />
           </div>
         </div>
 
-        {/* Row 7 */}
+        {/* Row 7: Email / Phone / Blood */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm">Email</label>

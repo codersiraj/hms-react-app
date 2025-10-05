@@ -18,14 +18,14 @@ export default function MemberList() {
     fullName: "",
     dob: "",
     gender: "Male",
-    nationality: "Malaysian", // 👈 default if NRIC
+    nationality: "Malaysian", // Default for NRIC
     address1: "",
     address2: "",
     address3: "",
     postalCode: "",
     district: "",
     state: "",
-    country: "",
+    country: "Malaysia", // Default for NRIC
     email: "",
     phone: "",
     blood: "",
@@ -34,24 +34,28 @@ export default function MemberList() {
 
   // ✅ Auto DOB from NRIC logic
   const handleNricChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormData((prev) => ({ ...prev, nric: value }));
+  const value = e.target.value;
+  setFormData((prev) => ({ ...prev, nric: value }));
 
-    // NRIC must be at least 6 digits
-    if (value.length >= 6) {
-      const yy = parseInt(value.substring(0, 2), 10);
-      const mm = parseInt(value.substring(2, 4), 10);
-      const dd = parseInt(value.substring(4, 6), 10);
+  if (value.length >= 6) {
+    const yy = parseInt(value.substring(0, 2), 10);
+    const mm = parseInt(value.substring(2, 4), 10);
+    const dd = parseInt(value.substring(4, 6), 10);
 
-      if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31) {
-        const fullYear = yy >= 25 ? 1900 + yy : 2000 + yy;
-        const dobValue = `${fullYear}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
-        setFormData((prev) => ({ ...prev, dob: dobValue }));
-      }
+    if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31) {
+      const fullYear = yy >= 25 ? 1900 + yy : 2000 + yy;
+      const dobValue = `${fullYear}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
+      setFormData((prev) => ({ ...prev, dob: dobValue }));
+      return;
     }
-  };
+  }
 
-  // ✅ ID Type change logic (for Nationality behavior)
+  // ❌ Invalid / incomplete NRIC — clear DOB
+  setFormData((prev) => ({ ...prev, dob: "" }));
+};
+
+
+  // ✅ ID Type change logic (for Nationality, Country & DOB lock)
   const handleIdTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
 
@@ -59,6 +63,8 @@ export default function MemberList() {
       ...prev,
       idType: value,
       nationality: value === "NRIC" ? "Malaysian" : "",
+      country: value === "NRIC" ? "Malaysia" : "",
+      dob: value === "Passport" ? "" : prev.dob, // clear DOB only for Passport
     }));
   };
 
@@ -173,7 +179,7 @@ export default function MemberList() {
               <select
                 name="idType"
                 value={formData.idType}
-                onChange={handleIdTypeChange} // 👈 Custom logic for Nationality
+                onChange={handleIdTypeChange}
                 className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-600"
               >
                 <option>NRIC</option>
@@ -216,7 +222,7 @@ export default function MemberList() {
                 name="dob"
                 value={formData.dob}
                 onChange={handleChange}
-                readOnly={formData.idType === "NRIC"} // 👈 Lock when ID Type is NRIC
+                readOnly={formData.idType === "NRIC"} // Lock when NRIC
                 className={`w-full border rounded-lg px-3 py-2 ${
                   formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
                 }`}
@@ -245,7 +251,7 @@ export default function MemberList() {
                 name="nationality"
                 value={formData.nationality}
                 onChange={handleChange}
-                readOnly={formData.idType === "NRIC"} // 👈 Lock for NRIC
+                readOnly={formData.idType === "NRIC"}
                 className={`w-full border rounded-lg px-3 py-2 ${
                   formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
                 }`}
@@ -315,7 +321,10 @@ export default function MemberList() {
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
+                readOnly={formData.idType === "NRIC"} // Lock for NRIC
+                className={`w-full border rounded-lg px-3 py-2 ${
+                  formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+                }`}
               />
             </div>
           </div>
