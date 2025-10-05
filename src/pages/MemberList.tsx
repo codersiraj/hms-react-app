@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import MemberTable from "../components/member/MemberTable";
 
-const apiBaseUrl = (window as any)._env_?.API_BASE_URL || 'https://localhost:7181';
+const apiBaseUrl = (window as any)._env_?.API_BASE_URL || "https://localhost:7181";
 
 export default function MemberList() {
   const [showForm, setShowForm] = useState(false);
@@ -10,7 +10,7 @@ export default function MemberList() {
   const [message, setMessage] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // Form state
+  // ✅ Form state
   const [formData, setFormData] = useState({
     memberType: "Doctor",
     idType: "NRIC",
@@ -18,7 +18,7 @@ export default function MemberList() {
     fullName: "",
     dob: "",
     gender: "Male",
-    nationality: "",
+    nationality: "Malaysian", // 👈 default if NRIC
     address1: "",
     address2: "",
     address3: "",
@@ -32,31 +32,56 @@ export default function MemberList() {
     remark: "",
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value } = e.target;
+  // ✅ Auto DOB from NRIC logic
+  const handleNricChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => ({ ...prev, nric: value }));
+
+    // NRIC must be at least 6 digits
+    if (value.length >= 6) {
+      const yy = parseInt(value.substring(0, 2), 10);
+      const mm = parseInt(value.substring(2, 4), 10);
+      const dd = parseInt(value.substring(4, 6), 10);
+
+      if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31) {
+        const fullYear = yy >= 25 ? 1900 + yy : 2000 + yy;
+        const dobValue = `${fullYear}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
+        setFormData((prev) => ({ ...prev, dob: dobValue }));
+      }
+    }
+  };
+
+  // ✅ ID Type change logic (for Nationality behavior)
+  const handleIdTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      idType: value,
+      nationality: value === "NRIC" ? "Malaysian" : "",
     }));
   };
 
+  // ✅ Generic field change
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleFormSubmitSuccess = () => {
-    // ✅ Trigger re-fetch in MemberTable
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  // ✅ Form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/member/create`,
-        {
+      const response = await fetch(`${apiBaseUrl}/api/member/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -79,7 +104,7 @@ export default function MemberList() {
           blood: formData.blood,
           remark: formData.remark,
           isPWD: false,
-          createdBy: "system", // or get from session
+          createdBy: "system",
         }),
       });
 
@@ -87,9 +112,7 @@ export default function MemberList() {
 
       if (response.ok) {
         setMessage("✅ " + result.message);
-        // ✅ trigger table refresh
         handleFormSubmitSuccess();
-        // Auto-hide form after 2s
         setTimeout(() => {
           setShowForm(false);
           setMessage(null);
@@ -130,12 +153,10 @@ export default function MemberList() {
             </div>
           )}
 
-          {/* Row 1 */}
+          {/* Row 1: Member Type, ID Type */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Member Type
-              </label>
+              <label className="block text-sm font-medium text-gray-600">Member Type</label>
               <select
                 name="memberType"
                 value={formData.memberType}
@@ -148,13 +169,11 @@ export default function MemberList() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                ID Type
-              </label>
+              <label className="block text-sm font-medium text-gray-600">ID Type</label>
               <select
                 name="idType"
                 value={formData.idType}
-                onChange={handleChange}
+                onChange={handleIdTypeChange} // 👈 Custom logic for Nationality
                 className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-600"
               >
                 <option>NRIC</option>
@@ -163,24 +182,21 @@ export default function MemberList() {
             </div>
           </div>
 
-          {/* Row 2 */}
+          {/* Row 2: NRIC, Full Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                NRIC
-              </label>
+              <label className="block text-sm font-medium text-gray-600">NRIC</label>
               <input
                 type="text"
                 name="nric"
                 value={formData.nric}
-                onChange={handleChange}
+                onChange={handleNricChange}
                 className="w-full border rounded-lg px-3 py-2"
+                placeholder="e.g. 991231145678"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Full Name
-              </label>
+              <label className="block text-sm font-medium text-gray-600">Full Name</label>
               <input
                 type="text"
                 name="fullName"
@@ -191,24 +207,23 @@ export default function MemberList() {
             </div>
           </div>
 
-          {/* Row 3 */}
+          {/* Row 3: DOB, Gender */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                DOB
-              </label>
+              <label className="block text-sm font-medium text-gray-600">DOB</label>
               <input
                 type="date"
                 name="dob"
                 value={formData.dob}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
+                readOnly={formData.idType === "NRIC"} // 👈 Lock when ID Type is NRIC
+                className={`w-full border rounded-lg px-3 py-2 ${
+                  formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+                }`}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Gender
-              </label>
+              <label className="block text-sm font-medium text-gray-600">Gender</label>
               <select
                 name="gender"
                 value={formData.gender}
@@ -221,24 +236,24 @@ export default function MemberList() {
             </div>
           </div>
 
-          {/* Row 4 */}
+          {/* Row 4: Nationality, Postal Code */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Nationality
-              </label>
+              <label className="block text-sm font-medium text-gray-600">Nationality</label>
               <input
                 type="text"
                 name="nationality"
                 value={formData.nationality}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
+                readOnly={formData.idType === "NRIC"} // 👈 Lock for NRIC
+                className={`w-full border rounded-lg px-3 py-2 ${
+                  formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+                }`}
+                placeholder={formData.idType === "NRIC" ? "" : "Enter nationality"}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Postal Code
-              </label>
+              <label className="block text-sm font-medium text-gray-600">Postal Code</label>
               <input
                 type="text"
                 name="postalCode"
@@ -251,9 +266,7 @@ export default function MemberList() {
 
           {/* Address */}
           <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Address 1
-            </label>
+            <label className="block text-sm font-medium text-gray-600">Address 1</label>
             <input
               type="text"
               name="address1"
@@ -263,9 +276,7 @@ export default function MemberList() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Address 2
-            </label>
+            <label className="block text-sm font-medium text-gray-600">Address 2</label>
             <input
               type="text"
               name="address2"
@@ -274,25 +285,11 @@ export default function MemberList() {
               className="w-full border rounded-lg px-3 py-2"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Address 3
-            </label>
-            <input
-              type="text"
-              name="address3"
-              value={formData.address3}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2"
-            />
-          </div>
 
-          {/* Row 6 */}
+          {/* Row 6: City, State, Country */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                District
-              </label>
+              <label className="block text-sm font-medium text-gray-600">City</label>
               <input
                 type="text"
                 name="district"
@@ -302,9 +299,7 @@ export default function MemberList() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                State
-              </label>
+              <label className="block text-sm font-medium text-gray-600">State</label>
               <input
                 type="text"
                 name="state"
@@ -314,9 +309,7 @@ export default function MemberList() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Country
-              </label>
+              <label className="block text-sm font-medium text-gray-600">Country</label>
               <input
                 type="text"
                 name="country"
@@ -327,12 +320,10 @@ export default function MemberList() {
             </div>
           </div>
 
-          {/* Row 7 */}
+          {/* Row 7: Email, Phone, Blood Group */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Email
-              </label>
+              <label className="block text-sm font-medium text-gray-600">Email</label>
               <input
                 type="email"
                 name="email"
@@ -342,9 +333,7 @@ export default function MemberList() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Phone
-              </label>
+              <label className="block text-sm font-medium text-gray-600">Phone</label>
               <input
                 type="text"
                 name="phone"
@@ -354,9 +343,7 @@ export default function MemberList() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Blood Group
-              </label>
+              <label className="block text-sm font-medium text-gray-600">Blood Group</label>
               <input
                 type="text"
                 name="blood"
@@ -369,9 +356,7 @@ export default function MemberList() {
 
           {/* Remark */}
           <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Remark
-            </label>
+            <label className="block text-sm font-medium text-gray-600">Remark</label>
             <textarea
               name="remark"
               value={formData.remark}
@@ -401,7 +386,7 @@ export default function MemberList() {
         </form>
       )}
 
-      {/* ✅ Table with refresh */}
+      {/* ✅ Member Table */}
       <MemberTable refreshTrigger={refreshTrigger} />
     </div>
   );

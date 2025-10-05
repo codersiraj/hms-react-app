@@ -182,21 +182,11 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
             className="w-full border px-3 py-2 rounded"
           />
         </div>
-        <div>
-          <label className="block text-sm">Address 3</label>
-          <input
-            type="text"
-            name="address3"
-            value={formData.address3 || ""}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
 
         {/* Row 6 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm">District</label>
+            <label className="block text-sm">City</label>
             <input
               type="text"
               name="district"
