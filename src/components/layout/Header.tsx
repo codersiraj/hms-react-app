@@ -55,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, setStatusMessage }) => {
   };
 
   return (
-    <header className="bg-[#3d6188] text-white flex items-center justify-between px-4 py-2 h-auto sm:h-16 z-30 shadow-md">
+    <header className="bg-cyan-600 text-white flex items-center justify-between px-4 py-2 h-auto sm:h-16 z-30 shadow-md">
       {/* Left: Hamburger */}
       <div className="flex items-center gap-3 sm:gap-2 flex-shrink-0 mr-2 sm:mr-0">
         <button onClick={onMenuClick} className="focus:outline-none">

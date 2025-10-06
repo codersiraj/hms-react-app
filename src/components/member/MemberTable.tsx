@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import EditMemberForm from "../../pages/EditMemberForm";
 import { CheckCircle } from "lucide-react";
+import Loader from "../common/Loader";
 
 interface Member {
   memberId: string;
@@ -157,14 +158,14 @@ export default function MemberTable({ refreshTrigger }: MemberTableProps) {
 
   return (
     <div className="mt-6">
-      <h2 className="text-lg font-semibold mb-3 text-gray-800">Member List</h2>
+      {/* <h2 className="text-lg font-semibold mb-3 text-gray-800">Member List</h2> */}
 
       {message && (
         <div className="mb-4 p-2 rounded bg-gray-100 text-center">{message}</div>
       )}
 
       {loading ? (
-        <div className="text-center py-4">Loading...</div>
+        <div className="text-center py-4"><Loader /></div>
       ) : (
         <div className="overflow-x-auto rounded-lg shadow">
           <table className="w-full border-collapse bg-white text-left text-sm text-gray-600">

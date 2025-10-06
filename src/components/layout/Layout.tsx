@@ -1,10 +1,11 @@
 // src/components/layout/Layout.tsx
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../layout/Sidebar";
 import Header from "../layout/Header";
 import LogoHeader from "./LogoHeader";
 import PatientDetailsDashboard from "../../pages/PatientDetailsDashboard";
+import Loader from "../common/Loader";
 
 export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
@@ -13,6 +14,10 @@ export default function Layout() {
     text: string;
     color: "green" | "red";
   } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [firstLoad, setFirstLoad] = useState(true);
+
+  const location = useLocation();
 
   const toggleSidebar = () => {
     if (window.innerWidth < 768) {
@@ -27,14 +32,35 @@ export default function Layout() {
   const totalFixedHeader = logoHeaderHeight + topHeaderHeight;
   const sidebarWidth = collapsed ? 64 : 256;
 
+  // ✅ Full-screen loader on first load
+  useEffect(() => {
+    const timer = setTimeout(() => setFirstLoad(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // ✅ Section loader for sidebar navigation
+  useEffect(() => {
+    if (!firstLoad) {
+      setLoading(true);
+      const timer = setTimeout(() => setLoading(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname]);
+
   useEffect(() => {
     const listener = () => toggleSidebar();
     window.addEventListener("toggleSidebar", listener);
     return () => window.removeEventListener("toggleSidebar", listener);
   }, []);
 
+  // 🧠 Step 1: Full-screen splash loader
+  if (firstLoad) {
+    return <Loader fullscreen />;
+  }
+
+  // 🧠 Step 2: Normal layout (with body-only loader)
   return (
-    <div className="h-screen w-screen bg-[#ebf0f4] overflow-hidden">
+    <div className="h-screen w-screen bg-[#ebf0f4] overflow-hidden relative">
       {/* Top Headers */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <LogoHeader />
@@ -50,7 +76,7 @@ export default function Layout() {
 
       {/* Main Content */}
       <main
-        className="transition-all duration-300 overflow-y-auto"
+        className="relative transition-all duration-300 overflow-y-auto"
         style={{
           marginLeft: window.innerWidth >= 768 ? `${sidebarWidth}px` : "0px",
           marginTop: `${totalFixedHeader}px`,
@@ -59,6 +85,9 @@ export default function Layout() {
           boxSizing: "border-box",
         }}
       >
+        {/* ✅ Loader only inside content area */}
+        {/* {loading && <Loader />} */}
+
         <div className="min-h-full">
           {statusMessage ? (
             <PatientDetailsDashboard statusMessage={statusMessage} />
