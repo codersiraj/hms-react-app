@@ -87,13 +87,13 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, setStatusMessage }) => {
           />
           <button
             onClick={handleCheck}
-            className="hidden sm:block bg-[#003366] hover:bg-cyan-600 text-white text-sm font-medium rounded-md px-4 py-1.5"
+            className="hidden sm:block bg-cyan-800 hover:bg-cyan-700 text-white text-sm font-medium rounded-md px-4 py-1.5"
           >
             Check
           </button>
           <button
             onClick={handleCheck}
-            className="sm:hidden bg-[#003366] hover:bg-cyan-600 text-white p-2 rounded-md flex items-center justify-center"
+            className="sm:hidden bg-cyan-800 hover:bg-cyan-700 text-white p-2 rounded-md flex items-center justify-center"
             aria-label="Search"
           >
             <svg

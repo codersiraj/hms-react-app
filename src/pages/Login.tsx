@@ -49,7 +49,7 @@ export default function Login() {
               alt="HMS Logo"
               className="w-48 max-w-full sm:w-56 md:w-80 h-auto mb-5 object-contain"
             />
-            <h2 className="text-2xl font-semibold text-gray-800 text-center">
+            <h2 className="text-2xl font-semibold text-cyan-700 text-center">
               Sign In
             </h2>
           </div>

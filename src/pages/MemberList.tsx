@@ -140,7 +140,7 @@ export default function MemberList() {
         <h1 className="text-2xl font-bold text-gray-800">Members</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg shadow-md transition"
+          className="flex items-center bg-cyan-800 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg shadow-md transition"
         >
           <Plus className="mr-2 h-5 w-5" />
           Create Member

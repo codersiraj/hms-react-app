@@ -209,7 +209,7 @@ export default function MemberTable({ refreshTrigger }: MemberTableProps) {
                       ) : (
                         <button
                           onClick={() => openAccessModal(member.memberId)}
-                          className="px-2 py-1 text-sm bg-cyan-600 text-white rounded hover:bg-cyan-700"
+                          className="px-2 py-1 text-sm bg-cyan-800 text-white rounded hover:bg-cyan-700"
                         >
                           Provide Access
                         </button>
