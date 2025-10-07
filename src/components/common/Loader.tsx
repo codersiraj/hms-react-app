@@ -2,7 +2,7 @@ import React from "react";
 import HMS_LOGO from "../../assets/img/HMS_LOGO.png";
 
 interface LoaderProps {
-  fullscreen?: boolean; // true for full-page splash, false for in-body loading
+  fullscreen?: boolean;
 }
 
 export default function Loader({ fullscreen = false }: LoaderProps) {
@@ -10,9 +10,19 @@ export default function Loader({ fullscreen = false }: LoaderProps) {
     <div
       className={`flex items-center justify-center ${
         fullscreen
-          ? "fixed inset-0 bg-white z-[9999]"
-          : "absolute inset-0 bg-white/70 z-50 rounded-lg"
+          ? "fixed inset-0 bg-white z-[9999]" // full-screen mode
+          : "absolute inset-0 bg-white/70 z-40 rounded-lg" // container-only mode
       }`}
+      style={
+        fullscreen
+          ? {}
+          : {
+              top: 0, // stay within main content
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }
+      }
     >
       <img
         src={HMS_LOGO}

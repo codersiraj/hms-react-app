@@ -26,18 +26,19 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, setStatusMessage }) => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/check-nric?nric=${nric}`);
-      if (!response.ok) {
-        throw new Error("API request failed");
-      }
+      navigate("/patient-register");
+      // const response = await fetch(`${API_BASE_URL}/check-nric?nric=${nric}`);
+      // if (!response.ok) {
+      //   throw new Error("API request failed");
+      // }
 
-      const result = await response.json();
+      // const result = await response.json();
 
-      if (result.exists === true) {
-        setStatusMessage({ text: "Patient exists.", color: "green" });
-      } else {
-        setStatusMessage({ text: "Patient not found.", color: "red" });
-      }
+      // if (result.exists === true) {
+      //   setStatusMessage({ text: "Patient exists.", color: "green" });
+      // } else {
+      //   setStatusMessage({ text: "Patient not found.", color: "red" });
+      // }
     } catch (error) {
       console.error("Check failed:", error);
       setStatusMessage({

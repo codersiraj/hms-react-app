@@ -191,10 +191,7 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
               name="nationality"
               value={formData.nationality || ""}
               onChange={handleChange}
-              readOnly={formData.idType === "NRIC"}
-              className={`w-full border px-3 py-2 rounded ${
-                formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
+              className={`w-full border px-3 py-2 rounded`}
             />
           </div>
           <div>
