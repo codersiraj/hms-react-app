@@ -4,8 +4,9 @@ import {
   CalendarCheck,
   ChevronRight,
   ChevronDown,
+  User,
 } from "lucide-react";
-import React, { JSX, useState } from "react";
+import React, { JSX, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "../../utils/cn";
 
@@ -15,7 +16,7 @@ type SidebarProps = {
   setMobileOpen: (open: boolean) => void;
 };
 
-// ✅ Union type for menu items (either parent or single)
+// ✅ Union type for menu items
 type MenuItem =
   | {
       label: string;
@@ -41,7 +42,7 @@ export default function Sidebar({
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ Type-safe menus
+  // ✅ Define sidebar menu items
   const menus: MenuItem[] = [
     {
       label: "Dashboard",
@@ -70,6 +71,17 @@ export default function Sidebar({
         },
       ],
     },
+    {
+      label: "Patient",
+      icon: <User size={22} />,
+      children: [
+        {
+          label: "Patient Register",
+          key: "patient-register",
+          onClick: () => navigate("/patient-register"),
+        },
+      ],
+    },
     // {
     //   label: "Appointments",
     //   icon: <CalendarCheck size={22} />,
@@ -78,6 +90,20 @@ export default function Sidebar({
   ];
 
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
+  // ✅ Automatically open dropdown if route matches a child item
+  useEffect(() => {
+    menus.forEach((menu) => {
+      if (
+        menu.children &&
+        menu.children.some((child) =>
+          location.pathname.includes(`/${child.key}`)
+        )
+      ) {
+        setOpenDropdown(menu.label);
+      }
+    });
+  }, [location.pathname]);
 
   return (
     <>
@@ -102,12 +128,16 @@ export default function Sidebar({
             const hasChildren = !!menu.children;
             const isOpen = openDropdown === menu.label;
 
+            // ✅ Determine if menu or its child is active
             const isActive =
-              location.pathname.includes(menu.label.toLowerCase()) ||
+              (location.pathname === "/" && menu.label === "Dashboard") ||
               (menu.children &&
                 menu.children.some((child) =>
-                  location.pathname.includes(child.key)
-                ));
+                  location.pathname.includes(`/${child.key}`)
+                )) ||
+              (!menu.children &&
+                location.pathname ===
+                  `/${menu.label.toLowerCase().replace(" ", "-")}`);
 
             return (
               <div
@@ -119,7 +149,7 @@ export default function Sidebar({
                 <button
                   onClick={() => {
                     if (!hasChildren) {
-                      (menu as any).onClick?.(); // safely handle both cases
+                      (menu as any).onClick?.();
                     } else if (!collapsed) {
                       setOpenDropdown(isOpen ? null : menu.label);
                     }
@@ -127,7 +157,7 @@ export default function Sidebar({
                   className={cn(
                     "flex items-center w-full px-4 py-2 rounded-md transition-colors duration-200",
                     isActive
-                      ? "bg-cyan-800"
+                      ? "bg-cyan-800 shadow-inner"
                       : "hover:bg-cyan-700 hover:shadow-sm"
                   )}
                 >
@@ -152,7 +182,9 @@ export default function Sidebar({
                 {!collapsed && hasChildren && isOpen && (
                   <div className="pl-8 mt-1 space-y-1">
                     {menu.children.map((child, idx) => {
-                      const isChildActive = location.pathname.includes(child.key);
+                      const isChildActive = location.pathname.includes(
+                        `/${child.key}`
+                      );
                       return (
                         <button
                           key={idx}
@@ -175,7 +207,9 @@ export default function Sidebar({
                 {collapsed && hovered === menu.label && hasChildren && (
                   <div className="absolute left-full top-0 bg-cyan-700 text-white rounded-lg shadow-lg z-50 min-w-[180px] ml-1">
                     {menu.children.map((child, idx) => {
-                      const isChildActive = location.pathname.includes(child.key);
+                      const isChildActive = location.pathname.includes(
+                        `/${child.key}`
+                      );
                       return (
                         <button
                           key={idx}

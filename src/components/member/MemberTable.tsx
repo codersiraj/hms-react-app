@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import EditMemberForm from "../../pages/EditMemberForm";
-import { CheckCircle } from "lucide-react";
 import Loader from "../common/Loader";
+import { CheckCircle, Edit, Trash2, KeyRound, XCircle } from "lucide-react";
 
 interface Member {
   memberId: string;
@@ -18,7 +18,8 @@ interface MemberTableProps {
   refreshTrigger: number;
 }
 
-const apiBaseUrl = (window as any)._env_?.API_BASE_URL || 'https://localhost:7181';
+const apiBaseUrl =
+  (window as any)._env_?.API_BASE_URL || "https://localhost:7181";
 
 export default function MemberTable({ refreshTrigger }: MemberTableProps) {
   const [members, setMembers] = useState<Member[]>([]);
@@ -48,19 +49,14 @@ export default function MemberTable({ refreshTrigger }: MemberTableProps) {
       const withAccessInfo = await Promise.all(
         membersArray.map(async (member) => {
           try {
-            // Call API to find userId by memberId
             const res = await fetch(
               `${apiBaseUrl}/api/useraccount/by-member/${member.memberId}`
             );
-
-            if (!res.ok) {
-              return { ...member, hasAccess: false };
-            }
+            if (!res.ok) return { ...member, hasAccess: false };
 
             const user = await res.json();
             const userId = user.userID;
 
-            // Check full user details
             const fullUserRes = await fetch(
               `${apiBaseUrl}/api/useraccount/${userId}`
             );
@@ -71,8 +67,7 @@ export default function MemberTable({ refreshTrigger }: MemberTableProps) {
             } else {
               return { ...member, hasAccess: false };
             }
-          } catch (err) {
-            console.error("Error checking access:", err);
+          } catch {
             return { ...member, hasAccess: false };
           }
         })
@@ -96,7 +91,6 @@ export default function MemberTable({ refreshTrigger }: MemberTableProps) {
     if (!window.confirm("Are you sure you want to delete this member?")) return;
     try {
       const response = await fetch(
-        
         `${apiBaseUrl}/api/member/delete/${memberId}?editedBy=adminUser`,
         { method: "DELETE" }
       );
@@ -142,7 +136,7 @@ export default function MemberTable({ refreshTrigger }: MemberTableProps) {
         body: JSON.stringify({
           userID: userId,
           memberID: selectedMemberId,
-          userType: userType,
+          userType,
           pwd: "Default@123",
           createdBy: "adminUser",
         }),
@@ -158,84 +152,144 @@ export default function MemberTable({ refreshTrigger }: MemberTableProps) {
 
   return (
     <div className="mt-6">
-      {/* <h2 className="text-lg font-semibold mb-3 text-gray-800">Member List</h2> */}
-
       {message && (
         <div className="mb-4 p-2 rounded bg-gray-100 text-center">{message}</div>
       )}
 
       {loading ? (
-        <div className="text-center py-4"><Loader /></div>
+        <div className="text-center py-4">
+          <Loader />
+        </div>
       ) : (
         <div className="overflow-x-auto rounded-lg shadow">
           <table className="w-full border-collapse bg-white text-left text-sm text-gray-600">
             <thead className="bg-cyan-600 text-white">
               <tr>
-                <th className="px-4 py-3">Member ID</th>
                 <th className="px-4 py-3">NRIC</th>
                 <th className="px-4 py-3">Full Name</th>
-                <th className="px-4 py-3">DOB</th>
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Gender</th>
+                <th className="px-4 py-3 hidden md:table-cell">DOB</th>
+                <th className="px-4 py-3 hidden md:table-cell">Email</th>
+                <th className="px-4 py-3 hidden md:table-cell">Gender</th>
                 <th className="px-4 py-3 text-center">Access</th>
                 <th className="px-4 py-3 text-center">Actions</th>
               </tr>
             </thead>
+
             <tbody className="divide-y divide-gray-200">
               {members.length > 0 ? (
                 members.map((member) => (
                   <tr key={member.memberId} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">{member.memberId}</td>
                     <td className="px-4 py-3">{member.nric}</td>
                     <td className="px-4 py-3">{member.fullName1}</td>
-                    <td className="px-4 py-3">
-                      {member.dob ? new Date(member.dob).toLocaleDateString() : "-"}
-                    </td>
-                    <td className="px-4 py-3">{member.email}</td>
-                    <td className="px-4 py-3">{member.gender}</td>
 
-                    {/* ✅ Access column with status check */}
+                    <td className="px-4 py-3 hidden md:table-cell">
+                      {member.dob
+                        ? new Date(member.dob).toLocaleDateString()
+                        : "-"}
+                    </td>
+                    <td className="px-4 py-3 hidden md:table-cell">
+                      {member.email}
+                    </td>
+                    <td className="px-4 py-3 hidden md:table-cell">
+                      {member.gender}
+                    </td>
+
+                    {/* ✅ Access column with responsive icons */}
                     <td className="px-4 py-3 text-center">
                       {member.hasAccess ? (
-                        <div className="flex items-center justify-center space-x-2">
-                          <CheckCircle className="text-green-600 w-5 h-5" />
-                          <button
-                            onClick={() => handleRevokeAccess(member.userId!)}
-                            className="px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
-                          >
-                            Revoke
-                          </button>
-                        </div>
+                        <>
+                          {/* ✅ Desktop */}
+                          <div className="hidden md:flex items-center justify-center space-x-2">
+                            <CheckCircle className="text-green-600 w-5 h-5" />
+                            <button
+                              onClick={() => handleRevokeAccess(member.userId!)}
+                              className="px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
+                            >
+                              Revoke
+                            </button>
+                          </div>
+
+                          {/* ✅ Mobile */}
+                          <div className="md:hidden flex items-center justify-center space-x-3">
+                            <CheckCircle className="text-green-600 w-5 h-5" />
+                            <button
+                              onClick={() => handleRevokeAccess(member.userId!)}
+                              title="Revoke Access"
+                              className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                            >
+                              <XCircle className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </>
                       ) : (
-                        <button
-                          onClick={() => openAccessModal(member.memberId)}
-                          className="px-2 py-1 text-sm bg-cyan-800 text-white rounded hover:bg-cyan-700"
-                        >
-                          Provide Access
-                        </button>
+                        <>
+                          {/* Desktop */}
+                          <button
+                            onClick={() => openAccessModal(member.memberId)}
+                            className="hidden md:inline-block px-2 py-1 text-sm bg-cyan-800 text-white rounded hover:bg-cyan-700"
+                          >
+                            Provide Access
+                          </button>
+
+                          {/* ✅ Mobile */}
+                          <div className="md:hidden flex justify-center">
+                            <button
+                              onClick={() => openAccessModal(member.memberId)}
+                              title="Provide Access"
+                              className="bg-cyan-700 text-white p-2 rounded-full hover:bg-cyan-800"
+                            >
+                              <KeyRound className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </>
                       )}
                     </td>
 
-                    {/* ✅ Actions column for member edit/delete */}
+
+                    {/* ✅ Actions column */}
                     <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => setEditingMemberId(member.memberId)}
-                        className="px-3 py-1 mr-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteMember(member.memberId)}
-                        className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
+                      {/* Desktop Buttons */}
+                      <div className="hidden md:flex justify-center space-x-2">
+                        <button
+                          onClick={() => setEditingMemberId(member.memberId)}
+                          className="px-3 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteMember(member.memberId)}
+                          className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                        >
+                          Delete
+                        </button>
+                      </div>
+
+                      {/* Mobile Icons */}
+                      <div className="flex justify-center space-x-3 md:hidden">
+                        <button
+                          onClick={() => setEditingMemberId(member.memberId)}
+                          title="Edit Member"
+                          className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteMember(member.memberId)}
+                          title="Delete Member"
+                          className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="text-center py-4 text-gray-500">
+                  <td
+                    colSpan={8}
+                    className="text-center py-4 text-gray-500"
+                  >
                     No members found.
                   </td>
                 </tr>
@@ -300,7 +354,7 @@ export default function MemberTable({ refreshTrigger }: MemberTableProps) {
       {/* ✅ Edit Member Modal */}
       {editingMemberId && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-xl w-full max-w-3xl">
+          <div className="bg-white p-4 rounded-lg shadow-xl w-100% max-w-3xl">
             <EditMemberForm
               memberId={editingMemberId}
               onClose={() => setEditingMemberId(null)}

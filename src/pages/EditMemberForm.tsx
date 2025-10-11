@@ -96,6 +96,7 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
   if (!formData) return <div>Loading...</div>;
 
   return (
+    <div className="w-full max-w-3xl mx-auto px-4">
     <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 max-h-[80vh] overflow-y-auto">
       <h2 className="text-xl font-bold mb-4">Edit Member</h2>
 
@@ -329,6 +330,7 @@ export default function EditMemberForm({ memberId, onClose, onUpdated }: EditMem
           </button>
         </div>
       </form>
+    </div>
     </div>
   );
 }
