@@ -87,15 +87,15 @@ export default function Login() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? "👁️" : "🙈"}
               </button>
             </div>
 
-            <div className="flex justify-end text-sm">
+            {/* <div className="flex justify-end text-sm">
               <a href="#" className="text-cyan-600 hover:underline">
                 Forgot password?
               </a>
-            </div>
+            </div> */}
 
             <button
               type="submit"

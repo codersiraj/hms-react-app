@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Plus, Minus } from "lucide-react";
 import { Listbox } from "@headlessui/react";
@@ -18,6 +18,9 @@ export default function PatientRegister() {
   const navigate = useNavigate();
 
   const receivedNRIC = location.state?.nric || "";
+  const focusField = location.state?.focusField;
+
+  const fullNameRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     memberType: "Patient",
@@ -49,12 +52,22 @@ export default function PatientRegister() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
 
-  // ✅ Clear navigation state on first load
+  // ✅ Clear navigation state (avoids stale state when reloading)
   useEffect(() => {
     if (location.state) {
       navigate(location.pathname, { replace: true });
     }
   }, [location, navigate]);
+
+  // ✅ Focus handling from Header
+  useEffect(() => {
+    if (focusField === "fullName") {
+      setTimeout(() => {
+        fullNameRef.current?.focus();
+        fullNameRef.current?.select();
+      }, 300); // delay ensures DOM ready
+    }
+  }, [focusField]);
 
   // ✅ Fetch doctors list
   useEffect(() => {
@@ -179,17 +192,13 @@ export default function PatientRegister() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Patient Registration</h1>
 
-        {/* 🟦 Responsive Button */}
         <button
           onClick={() => setShowForm(!showForm)}
           className="flex items-center bg-cyan-800 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg shadow-md transition"
         >
-          {/* Mobile: Icon only */}
           <span className="block sm:hidden">
             {showForm ? <Minus className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
           </span>
-
-          {/* Desktop: Text with icon */}
           <span className="hidden sm:flex items-center">
             {showForm ? (
               <>
@@ -248,6 +257,7 @@ export default function PatientRegister() {
             <div>
               <label className="block text-sm font-medium text-gray-600">Full Name</label>
               <input
+                ref={fullNameRef}
                 type="text"
                 name="fullName"
                 value={formData.fullName}
@@ -257,17 +267,16 @@ export default function PatientRegister() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Date of Birth
-              </label>
+              <label className="block text-sm font-medium text-gray-600">Date of Birth</label>
               <input
                 type="date"
                 name="dob"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
                 readOnly={formData.idType === "NRIC"}
-                className={`w-full border rounded-lg px-3 py-2 ${formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
-                  }`}
+                className={`w-full border rounded-lg px-3 py-2 ${
+                  formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+                }`}
               />
             </div>
           </div>
@@ -332,9 +341,9 @@ export default function PatientRegister() {
                 value={formData.nationality}
                 onChange={handleChange}
                 readOnly={formData.idType === "NRIC"}
-                className={`w-full border rounded-lg px-3 py-2 ${formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
-                  }`}
-                placeholder={formData.idType === "NRIC" ? "Malaysian" : "Enter nationality"}
+                className={`w-full border rounded-lg px-3 py-2 ${
+                  formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+                }`}
               />
             </div>
             <div>
@@ -355,8 +364,9 @@ export default function PatientRegister() {
                 value={formData.country}
                 onChange={handleChange}
                 readOnly={formData.idType === "NRIC"}
-                className={`w-full border rounded-lg px-3 py-2 ${formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
-                  }`}
+                className={`w-full border rounded-lg px-3 py-2 ${
+                  formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+                }`}
               />
             </div>
             <div>
@@ -411,12 +421,12 @@ export default function PatientRegister() {
           <div>
             <h2 className="text-lg font-semibold text-gray-800 mb-2">Doctor Information</h2>
 
-            {/* 🟩 Mobile: Dropdown */}
+            {/* 🟩 Mobile Dropdown */}
             <div className="block md:hidden mb-6">
               <Listbox value={selectedDoctor} onChange={setSelectedDoctor}>
                 <Listbox.Button className="w-full border rounded-lg px-3 py-2 text-left bg-white">
                   {selectedDoctor
-                    ? `${selectedDoctor.fullName1} (${selectedDoctor.nric})`
+                    ? `${selectedDoctor.fullName1}`
                     : "-- Select a Doctor --"}
                 </Listbox.Button>
 
@@ -427,7 +437,8 @@ export default function PatientRegister() {
                         key={doctor.nric}
                         value={doctor}
                         className={({ active }) =>
-                          `cursor-pointer px-3 py-2 ${active ? "bg-cyan-700 text-white" : "text-gray-800"
+                          `cursor-pointer px-3 py-2 ${
+                            active ? "bg-cyan-700 text-white" : "text-gray-800"
                           }`
                         }
                       >
@@ -435,13 +446,15 @@ export default function PatientRegister() {
                       </Listbox.Option>
                     ))
                   ) : (
-                    <p className="p-2 text-gray-500 text-sm text-center">Loading doctors...</p>
+                    <p className="p-2 text-gray-500 text-sm text-center">
+                      Loading doctors...
+                    </p>
                   )}
                 </Listbox.Options>
               </Listbox>
             </div>
 
-            {/* 🟦 Tablet & Desktop: Grid */}
+            {/* 🟦 Desktop Grid */}
             <div className="hidden md:block">
               {doctors.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
@@ -451,13 +464,13 @@ export default function PatientRegister() {
                       <div
                         key={doctor.nric}
                         onClick={() => setSelectedDoctor(doctor)}
-                        className={`p-4 rounded-xl border shadow-sm cursor-pointer transition-all ${isSelected
+                        className={`p-4 rounded-xl border shadow-sm cursor-pointer transition-all ${
+                          isSelected
                             ? "bg-cyan-700 text-white border-cyan-800"
                             : "bg-white hover:bg-cyan-50"
-                          }`}
+                        }`}
                       >
-                        <p className="font-semibold text-lg">{doctor.fullName1}</p>
-                        <p className="text-sm">{doctor.nric}</p>
+                        <p className="font-semibold text-lg text-center">{doctor.fullName1}</p>
                       </div>
                     );
                   })}
@@ -467,7 +480,6 @@ export default function PatientRegister() {
               )}
             </div>
           </div>
-
 
           {/* === Buttons === */}
           <div className="flex justify-end space-x-4 mt-4">
@@ -481,10 +493,11 @@ export default function PatientRegister() {
             <button
               type="submit"
               disabled={loading || !selectedDoctor}
-              className={`px-4 py-2 rounded-lg text-white ${loading || !selectedDoctor
+              className={`px-4 py-2 rounded-lg text-white ${
+                loading || !selectedDoctor
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-cyan-600 hover:bg-cyan-700"
-                }`}
+              }`}
             >
               {loading ? "Saving..." : "Save"}
             </button>

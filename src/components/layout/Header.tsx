@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, setStatusMessage }) => {
     navigate("/login");
   };
 
-  // ✅ Watch for any user interaction to reset timer
+  // ✅ Watch for user activity to reset timer
   useEffect(() => {
     const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
     events.forEach((e) => window.addEventListener(e, resetTimer));
@@ -49,14 +49,15 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, setStatusMessage }) => {
   const handleCheck = async () => {
     if (nric.trim() === "") {
       setInputError(true);
-      setNRIC(""); // Clear text to show placeholder message clearly
+      setNRIC("");
       setTimeout(() => setInputError(false), 3000);
       return;
     }
 
     try {
       setInputError(false);
-      navigate("/patient-register", { state: { nric } });
+      // ✅ Navigate to patient register with NRIC + focus instruction
+      navigate("/patient-register", { state: { nric, focusField: "fullName" } });
       setTimeout(() => setNRIC(""), 200);
     } catch (error) {
       console.error("Check failed:", error);
