@@ -32,7 +32,6 @@ export default function PatientRegister() {
     nationality: "Malaysian",
     address1: "",
     address2: "",
-    address3: "",
     postalCode: "",
     district: "",
     state: "",
@@ -65,7 +64,7 @@ export default function PatientRegister() {
       setTimeout(() => {
         fullNameRef.current?.focus();
         fullNameRef.current?.select();
-      }, 300); // delay ensures DOM ready
+      }, 300);
     }
   }, [focusField]);
 
@@ -94,7 +93,10 @@ export default function PatientRegister() {
 
       if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31) {
         const fullYear = yy >= 25 ? 1900 + yy : 2000 + yy;
-        const dobValue = `${fullYear}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
+        const dobValue = `${fullYear}-${String(mm).padStart(
+          2,
+          "0"
+        )}-${String(dd).padStart(2, "0")}`;
         setDob(dobValue);
         setFormData((prev) => ({
           ...prev,
@@ -117,7 +119,9 @@ export default function PatientRegister() {
   }, [receivedNRIC]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -153,7 +157,6 @@ export default function PatientRegister() {
             nationality: formData.nationality,
             address1: formData.address1,
             address2: formData.address2,
-            address3: formData.address3,
             postCode: formData.postalCode,
             district: formData.district,
             stateName: formData.state,
@@ -191,7 +194,6 @@ export default function PatientRegister() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Patient Registration</h1>
-
         <button
           onClick={() => setShowForm(!showForm)}
           className="flex items-center bg-cyan-800 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg shadow-md transition"
@@ -213,7 +215,6 @@ export default function PatientRegister() {
         </button>
       </div>
 
-      {/* Form Section */}
       {showForm && (
         <form
           onSubmit={handleSubmit}
@@ -225,8 +226,8 @@ export default function PatientRegister() {
             </div>
           )}
 
-          {/* === Identification === */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* === Row 1: ID Type / NRIC / Full Name === */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-600">ID Type</label>
               <input
@@ -237,11 +238,8 @@ export default function PatientRegister() {
                 className="w-full border rounded-lg px-3 py-2 bg-gray-100 cursor-not-allowed"
               />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                NRIC / Passport No
-              </label>
+              <label className="block text-sm font-medium text-gray-600">NRIC / Passport No</label>
               <input
                 type="text"
                 name="nric"
@@ -250,10 +248,6 @@ export default function PatientRegister() {
                 className="w-full border rounded-lg px-3 py-2"
               />
             </div>
-          </div>
-
-          {/* === Personal Info === */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-600">Full Name</label>
               <input
@@ -265,7 +259,10 @@ export default function PatientRegister() {
                 className="w-full border rounded-lg px-3 py-2"
               />
             </div>
+          </div>
 
+          {/* === Row 2: DOB / Gender / Blood Group === */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-600">Date of Birth</label>
               <input
@@ -274,15 +271,10 @@ export default function PatientRegister() {
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
                 readOnly={formData.idType === "NRIC"}
-                className={`w-full border rounded-lg px-3 py-2 ${
-                  formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
-                }`}
+                className={`w-full border rounded-lg px-3 py-2 ${formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+                  }`}
               />
             </div>
-          </div>
-
-          {/* === Gender / Blood === */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-600">Gender</label>
               <select
@@ -307,7 +299,7 @@ export default function PatientRegister() {
             </div>
           </div>
 
-          {/* === Address Section === */}
+          {/* === Row 3: Address 1 / Address 2 === */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-600">Address 1</label>
@@ -331,7 +323,7 @@ export default function PatientRegister() {
             </div>
           </div>
 
-          {/* === Nationality / State / Country / Pin === */}
+          {/* === Row 4: Nationality / State / Country / Pin === */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-600">Nationality</label>
@@ -341,9 +333,8 @@ export default function PatientRegister() {
                 value={formData.nationality}
                 onChange={handleChange}
                 readOnly={formData.idType === "NRIC"}
-                className={`w-full border rounded-lg px-3 py-2 ${
-                  formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
-                }`}
+                className={`w-full border rounded-lg px-3 py-2 ${formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+                  }`}
               />
             </div>
             <div>
@@ -364,9 +355,8 @@ export default function PatientRegister() {
                 value={formData.country}
                 onChange={handleChange}
                 readOnly={formData.idType === "NRIC"}
-                className={`w-full border rounded-lg px-3 py-2 ${
-                  formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
-                }`}
+                className={`w-full border rounded-lg px-3 py-2 ${formData.idType === "NRIC" ? "bg-gray-100 cursor-not-allowed" : ""
+                  }`}
               />
             </div>
             <div>
@@ -381,19 +371,10 @@ export default function PatientRegister() {
             </div>
           </div>
 
-          {/* === Contact === */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
-              />
-            </div>
-            <div>
+          {/* === Row 5: Phone / Email / Remark === */}
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+            {/* Phone - smaller box */}
+            <div className="md:col-span-1">
               <label className="block text-sm font-medium text-gray-600">Phone</label>
               <input
                 type="text"
@@ -403,25 +384,38 @@ export default function PatientRegister() {
                 className="w-full border rounded-lg px-3 py-2"
               />
             </div>
+
+            {/* Email - medium box */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-600">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-3 py-2"
+              />
+            </div>
+
+            {/* Remark - long box */}
+            <div className="md:col-span-3">
+              <label className="block text-sm font-medium text-gray-600">Remark</label>
+              <input
+                type="text"
+                name="remark"
+                value={formData.remark}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-3 py-2"
+              />
+            </div>
           </div>
 
-          {/* === Remark === */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600">Remark</label>
-            <textarea
-              name="remark"
-              value={formData.remark}
-              onChange={handleChange}
-              rows={3}
-              className="w-full border rounded-lg px-3 py-2"
-            ></textarea>
-          </div>
 
           {/* === Doctor Info === */}
           <div>
             <h2 className="text-lg font-semibold text-gray-800 mb-2">Doctor Information</h2>
 
-            {/* 🟩 Mobile Dropdown */}
+            {/* Mobile Dropdown */}
             <div className="block md:hidden mb-6">
               <Listbox value={selectedDoctor} onChange={setSelectedDoctor}>
                 <Listbox.Button className="w-full border rounded-lg px-3 py-2 text-left bg-white">
@@ -437,8 +431,7 @@ export default function PatientRegister() {
                         key={doctor.nric}
                         value={doctor}
                         className={({ active }) =>
-                          `cursor-pointer px-3 py-2 ${
-                            active ? "bg-cyan-700 text-white" : "text-gray-800"
+                          `cursor-pointer px-3 py-2 ${active ? "bg-cyan-700 text-white" : "text-gray-800"
                           }`
                         }
                       >
@@ -454,7 +447,7 @@ export default function PatientRegister() {
               </Listbox>
             </div>
 
-            {/* 🟦 Desktop Grid */}
+            {/* Desktop Grid */}
             <div className="hidden md:block">
               {doctors.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
@@ -464,13 +457,14 @@ export default function PatientRegister() {
                       <div
                         key={doctor.nric}
                         onClick={() => setSelectedDoctor(doctor)}
-                        className={`p-4 rounded-xl border shadow-sm cursor-pointer transition-all ${
-                          isSelected
+                        className={`p-4 rounded-xl border shadow-sm cursor-pointer transition-all ${isSelected
                             ? "bg-cyan-700 text-white border-cyan-800"
                             : "bg-white hover:bg-cyan-50"
-                        }`}
+                          }`}
                       >
-                        <p className="font-semibold text-lg text-center">{doctor.fullName1}</p>
+                        <p className="font-semibold text-lg text-center">
+                          {doctor.fullName1}
+                        </p>
                       </div>
                     );
                   })}
@@ -493,11 +487,10 @@ export default function PatientRegister() {
             <button
               type="submit"
               disabled={loading || !selectedDoctor}
-              className={`px-4 py-2 rounded-lg text-white ${
-                loading || !selectedDoctor
+              className={`px-4 py-2 rounded-lg text-white ${loading || !selectedDoctor
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-cyan-600 hover:bg-cyan-700"
-              }`}
+                }`}
             >
               {loading ? "Saving..." : "Save"}
             </button>
